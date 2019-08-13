@@ -1,12 +1,25 @@
 /* eslint-disable no-unused-vars */
 
-import {settings, select, templates, classNames} from '../settings.js';
-import {AmountWidget} from './AmountWidget.js';
-import {DatePicker} from './DatePicker.js';
-import {HourPicker} from './HourPicker.js';
-import {utils} from '../utils.js';
+import {
+  settings,
+  select,
+  templates,
+  classNames
+} from '../settings.js';
+import {
+  AmountWidget
+} from './AmountWidget.js';
+import {
+  DatePicker
+} from './DatePicker.js';
+import {
+  HourPicker
+} from './HourPicker.js';
+import {
+  utils
+} from '../utils.js';
 
-export class Booking{
+export class Booking {
   constructor() {
     const thisBooking = this;
 
@@ -54,12 +67,12 @@ export class Booking{
     thisBooking.datePicker = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPicker);
 
-    thisBooking.dom.form.addEventListener('submit', function() {
+    thisBooking.dom.form.addEventListener('submit', function (event) {
       event.preventDefault();
       thisBooking.sendBooking();
     });
 
-    thisBooking.dom.wrapper.addEventListener('updated', function() {
+    thisBooking.dom.wrapper.addEventListener('updated', function () {
       thisBooking.updateDOM();
     });
 
@@ -82,18 +95,18 @@ export class Booking{
     }
 
     for (let singleTable of thisBooking.dom.tables) {
-      singleTable.addEventListener('click', function() {
+      singleTable.addEventListener('click', function () {
         if (!(singleTable.classList.contains(classNames.booking.tableBooked))) {
           singleTable.classList.add(classNames.booking.tableReserved);
         }
       });
-      thisBooking.dom.hourPicker.addEventListener('updated', function() {
+      thisBooking.dom.hourPicker.addEventListener('updated', function () {
         console.log('change of time');
         if (singleTable.classList.contains(classNames.booking.tableReserved)) {
           singleTable.classList.remove(classNames.booking.tableReserved);
         }
       });
-      thisBooking.dom.datePicker.addEventListener('updated', function() {
+      thisBooking.dom.datePicker.addEventListener('updated', function () {
         console.log('change of time');
         if (singleTable.classList.contains(classNames.booking.tableReserved)) {
           singleTable.classList.remove(classNames.booking.tableReserved);
@@ -101,7 +114,7 @@ export class Booking{
       });
     }
 
-    thisBooking.dom.datePicker.addEventListener('updated', function() {
+    thisBooking.dom.datePicker.addEventListener('updated', function () {
       thisBooking.colorSlider(thisBooking.date);
     });
   }
@@ -137,9 +150,9 @@ export class Booking{
     };
 
     fetch(url, options)
-      .then(function(response){
+      .then(function (response) {
         return response.json();
-      }) .then(function(parsedResponse){
+      }).then(function (parsedResponse) {
         console.log('parsedResponse', parsedResponse);
       });
 
@@ -173,18 +186,18 @@ export class Booking{
     console.log('getData urls', urls);
 
     Promise.all([
-      fetch(urls.booking),
-      fetch(urls.eventsCurrent),
-      fetch(urls.eventsRepeat),
-    ])
-      .then(function([bookingsResponse, eventsCurrentResponse, eventsRepeatResponse]){
+        fetch(urls.booking),
+        fetch(urls.eventsCurrent),
+        fetch(urls.eventsRepeat),
+      ])
+      .then(function ([bookingsResponse, eventsCurrentResponse, eventsRepeatResponse]) {
         return Promise.all([
           bookingsResponse.json(),
           eventsCurrentResponse.json(),
           eventsRepeatResponse.json(),
         ]);
       })
-      .then(function([bookings, eventsCurrent, eventsRepeat]){
+      .then(function ([bookings, eventsCurrent, eventsRepeat]) {
         thisBooking.parseData(bookings, eventsCurrent, eventsRepeat);
       });
   }
@@ -199,12 +212,22 @@ export class Booking{
     // console.log('eventsRepeat', eventsRepeat);
 
     for (let i = 0; i < eventsCurrent.length; i++) {
-      const { date, duration, table, hour } = eventsCurrent[i];
+      const {
+        date,
+        duration,
+        table,
+        hour
+      } = eventsCurrent[i];
       thisBooking.makeBooked(date, duration, table, hour);
     }
 
     for (let i = 0; i < bookings.length; i++) {
-      const { date, duration, table, hour } = bookings[i];
+      const {
+        date,
+        duration,
+        table,
+        hour
+      } = bookings[i];
       thisBooking.makeBooked(date, duration, table, hour);
     }
 
@@ -216,7 +239,12 @@ export class Booking{
 
     for (let i = thisBooking.minDate; i < thisBooking.maxDate; i = utils.addDays(i, 1)) {
       for (let j = 0; j < eventsRepeat.length; j++) {
-        const { date, duration, table, hour } = eventsRepeat[j];
+        const {
+          date,
+          duration,
+          table,
+          hour
+        } = eventsRepeat[j];
         thisBooking.makeBooked(utils.dateToStr(i), duration, table, hour);
       }
     }
@@ -226,12 +254,12 @@ export class Booking{
     thisBooking.colorSlider();
   }
 
-  makeBooked(date, duration, table, hour){
+  makeBooked(date, duration, table, hour) {
     const thisBooking = this;
     thisBooking.booked[date] = thisBooking.booked[date] || {};
 
     for (let i = 0; i < duration; i = i + 0.5) {
-      if(typeof thisBooking.booked[date][utils.hourToNumber(hour) + i] === 'undefined') {
+      if (typeof thisBooking.booked[date][utils.hourToNumber(hour) + i] === 'undefined') {
         thisBooking.booked[date][utils.hourToNumber(hour) + i] = [table];
       } else {
         thisBooking.booked[date][utils.hourToNumber(hour) + i].push(table);
@@ -242,7 +270,7 @@ export class Booking{
 
   }
 
-  colorSlider(date){
+  colorSlider(date) {
     const thisBooking = this;
 
 
